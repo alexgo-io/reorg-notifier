@@ -132,6 +132,9 @@ class Tracker {
         .map((hash) => JSON.stringify(this.blocksByHash[hash]))
         .join('\n')}
       `);
+
+        // trigger recursive back checking until beginning of reorg
+        await this.fetch_and_save_block(block_number - 1);
       }
     }
     return block;
