@@ -241,6 +241,11 @@ class Tracker {
     }
 
     await this.startUp();
+    await alertToTelegram('reorg', 'start', {
+      latestHeight: this.latestHeight.toString(),
+      latestTip: this.latestTip,
+      message: `Started tracking from block ${this.latestHeight}`,
+    });
     // eslint-disable-next-line no-constant-condition
     while (true) {
       await this.check();
