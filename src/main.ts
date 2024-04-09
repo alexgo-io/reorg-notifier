@@ -108,6 +108,7 @@ class Tracker {
   latestTip = '';
   blocksByHash: Record<string, BlockData> = {};
   blocksByHeight: Record<number, string[]> = {};
+  latestBlockShownTime = Date.now();
 
   async fetch_and_save_block(block_number: number) {
     const block = await pRetry(() => get_block(block_number), {
@@ -174,7 +175,13 @@ class Tracker {
         console.log(`Reorg tip found: ${latestTip}`);
       }
     } else {
-      console.log(`Next block shown: ${latestHeight}`);
+      console.log(
+        `Next block shown: ${latestHeight}, duration: ${
+          (Date.now() - this.latestBlockShownTime) / 1000
+        }s`
+      );
+
+      this.latestBlockShownTime = Date.now();
     }
 
     this.latestHeight = latestHeight;
