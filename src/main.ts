@@ -200,8 +200,10 @@ class Tracker {
   }
 
   async review() {
-    const blocksInHeight = flatten(Object.values(this.blocksByHeight));
-    if (Object.keys(this.blocksByHash).length !== blocksInHeight.length) {
+    if (
+      Object.keys(this.blocksByHash).length !==
+      Object.keys(this.blocksByHeight).length
+    ) {
       fs.writeFileSync(
         path.resolve(env().REORG_OUTPUT_LOCATION, `reorg-${Date.now()}.json`),
         JSON.stringify(
@@ -216,11 +218,18 @@ class Tracker {
         )
       );
 
+      const reorgBlocks =
+        Object.keys(this.blocksByHash).length -
+        Object.keys(this.blocksByHeight).length;
+
       await alertToTelegram('reorg', 'reorg', {
         latestHeight: this.latestHeight.toString(),
         latestTip: this.latestTip,
+        reorgedBlocks: reorgBlocks.toString(),
+        latestStableBlock: (this.latestHeight - reorgBlocks).toString(),
         message: `Reorg detected: ${
-          blocksInHeight.length - Object.keys(this.blocksByHash).length
+          Object.keys(this.blocksByHash).length -
+          Object.keys(this.blocksByHeight).length
         } blocks reorged.
         current block: ${this.latestHeight}`,
       });
